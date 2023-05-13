@@ -152,4 +152,3 @@ if printinteg:
  IntegFile = "IntegratedSpectrum.dat"
  integ_array = integ_array/9.0
  sp.savetxt(IntegFile,integ_array)
-##
