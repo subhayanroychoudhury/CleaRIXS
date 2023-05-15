@@ -40,7 +40,7 @@ calc_abs=userinp.calc_abs
 printinteg=userinp.printinteg
 printanalysis=userinp.printanalysis
 DoRIXS=userinp.DoRIXS
-print("Will read data from "+str(input_file)+" and "+str(output_file))
+print("Will read electronic structure data from "+str(input_file)+" and "+str(output_file))
 GS_tot_en, FCH_tot_en, Align_tot_en = tot_energy_reader(output_file,do_align)
 CI_Expansion=Unres_CISreader(output_file,check_amp)
 E_f = []
