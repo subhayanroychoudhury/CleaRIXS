@@ -9,6 +9,7 @@ printsticks=True
 printspec=True
 Dodebug=False
 calc_abs=True
+DoRIXS=True
 printinteg=False
 input_file=qchem.in
 output_file=qchem.out
