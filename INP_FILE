@@ -8,10 +8,9 @@ check_amp=True
 printsticks=True
 printspec=True
 Dodebug=False
-calc_abs=True
 DoRIXS=True
+calc_abs=True
 printinteg=False
 input_file=qchem.in
 output_file=qchem.out
 printanalysis=True
-

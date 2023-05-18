@@ -1,4 +1,4 @@
-""" Read the outputs of the Q-Chem calculation """
+""" Find all nontrivial determinants """
 from __future__ import print_function
 
 
@@ -108,11 +108,17 @@ def tot_energy_reader(FileName,do_align):
     if do_align:
      AlignFile = "./AlignDir/align_calc.out"
      ReadAl=open(AlignFile)
-     for line in ReadAl:
+     for line in reversed(list(ReadAl)): 
       if "Total energy in the final basis set" in line:
        Align_tot_en = float(line.split()[-1])
+       break
+     print("GS total energy = "+str(27.2114 * GS_tot_en))
+     print("FCH total energy = "+str(27.2114 * FCH_tot_en))
+     print("XCH total energy = "+str(27.2114 * Align_tot_en))
      return (27.2114 * GS_tot_en, 27.2114 * FCH_tot_en, 27.2114 * Align_tot_en)
     else:
+     print("GS total energy = "+str(27.2114 * GS_tot_en))
+     print("FCH total energy = "+str(27.2114 * FCH_tot_en))
      return (27.2114 * GS_tot_en, 27.2114 * FCH_tot_en, 0)
 
 def energy_reader(nocc,core):
@@ -133,6 +139,7 @@ def energy_reader(nocc,core):
       if (line_index > 2):
        list1 = line.split()
        eigenvalue_list = eigenvalue_list + list1
+    para.print("eigenvalue_list = "+str(eigenvalue_list))
     #eigenvalue_list.pop(int(core-1))
     #string=' '.join([str(item) for item in list1])     
     eigenvalue_list = sp.delete(eigenvalue_list,int(core-1))
@@ -158,13 +165,43 @@ def FCHunoccupied_energy_reader(nocc,core,FileName):
          list1 = line.split()
          eigenvalue_list = eigenvalue_list + list1
     eigenvalue_list.pop(0)
-    print("eigenvalue_list = "+str(eigenvalue_list))
+    #print("eigenvalue_list = "+str(eigenvalue_list))
     eigenvalue_list = sp.array(eigenvalue_list)
     FCH_ener = sp.asarray(eigenvalue_list, dtype = sp.float64,order ='C')
     conv_fac = 27.2114
     FCH_ener = conv_fac * FCH_ener
     return(FCH_ener)
 
+def for_b_arr(nelec, core_ind_gs):
+	FileName="KS_GSvsFCH_Overlap.dat"
+	ReadFile=open(FileName)
+	gs_indx=0
+	ovlp=[]
+	for line in ReadFile:
+	 dumm=[]
+	 gs_indx=gs_indx+1
+	 if (gs_indx > nelec+1):
+	  break #Don't go to GS conduction subspace
+         if (gs_indx != int(core_ind_gs)): #Skipping the core level to be emptied
+	  for i in range(nelec): #Don't go to FCH conduction subspace
+	   dumm.append(float(line.split()[i])) 
+	  ovlp.append(dumm)
+        para.print("PRINT OVERLAP")
+	for j in range(len(ovlp)):
+         para.print(str(j+1))
+	 para.print(str(ovlp[j]))
+	##################################
+	for j in range(len(ovlp)):
+	 a=sp.array(ovlp[j])
+	 norm=sp.sum((abs(a))**2)#norm of GS orbital within FCH occupied subspace
+	 para.print("For valence GS orb = "+str(j+1)+" norm within FCH occ. subspace is "+str(norm)) 
+	 para.print("Compare this with excited state :             "+str(nelec-j))
+	 para.print("Overlaps with appreciable magnitude ")
+	 for i in range(len(a)):
+	  if (abs(a[i]) > 0.01):
+	   para.print(str(i+1)+"         "+str(a[i])) 
+	 para.print("__________________________________________________")
+        return ovlp 
 def for_ixmat(nelec):
         FileName="dipole_beta_mom.dat"
         ReadFile=open(FileName)
@@ -276,4 +313,50 @@ def for_energy_eigenvalue(nelec):
           pass
         arr1 = sp.array(line.split())
         ener = sp.asarray(arr1, dtype = sp.float64,order ='C')
+        #para.print("Kohn-Sham Energy Eigenvalues")
+        #para.print(str(ener))
         return(ener)
+def DipoleMomentCalculator(core_orb_ind,nelec):
+	gs_matrix = sp.genfromtxt("beta_dipole_x_gs.txt")
+	mom_matrix = sp.genfromtxt("beta_dipole_x_mom.txt")
+	gs_dipole_x = 0
+	mom_dipole_x = 0
+	for i in range(nelec):
+	 mom_dipole_x += mom_matrix[i,i] 
+	for i in range(nelec+1):
+	 gs_dipole_x += gs_matrix[i,i]
+	gs_dipole_x = gs_dipole_x - gs_matrix[core_orb_ind-1 , core_orb_ind-1]
+        para.print("mom_dipole_x = "+str(mom_dipole_x))
+        para.print("gs_dipole_x = "+str(gs_dipole_x))
+        Difference_x = mom_dipole_x-gs_dipole_x
+        para.print("Difference = "+str(Difference_x))
+	gs_matrix = sp.genfromtxt("beta_dipole_y_gs.txt")
+	mom_matrix = sp.genfromtxt("beta_dipole_y_mom.txt")
+	gs_dipole_x = 0
+	mom_dipole_x = 0
+	for i in range(nelec):
+	 mom_dipole_x += mom_matrix[i,i] 
+	for i in range(nelec+1):
+	 gs_dipole_x += gs_matrix[i,i]
+	gs_dipole_x = gs_dipole_x - gs_matrix[core_orb_ind-1 , core_orb_ind-1]
+        para.print("mom_dipole_y = "+str(mom_dipole_x))
+        para.print("gs_dipole_y = "+str(gs_dipole_x))
+        Difference_y = mom_dipole_x-gs_dipole_x
+        para.print("Difference = "+str(Difference_y))
+	gs_matrix = sp.genfromtxt("beta_dipole_z_gs.txt")
+	mom_matrix = sp.genfromtxt("beta_dipole_z_mom.txt")
+	gs_dipole_x = 0
+	mom_dipole_x = 0
+	for i in range(nelec):
+	 mom_dipole_x += mom_matrix[i,i] 
+	for i in range(nelec+1):
+	 gs_dipole_x += gs_matrix[i,i]
+	gs_dipole_x = gs_dipole_x - gs_matrix[core_orb_ind-1 , core_orb_ind-1]
+        para.print("mom_dipole_z = "+str(mom_dipole_x))
+        para.print("gs_dipole_z = "+str(gs_dipole_x))
+        Difference_z = mom_dipole_x-gs_dipole_x
+        para.print("Difference = "+str(Difference_z))
+        RMS_Difference = ((Difference_x)**2 + (Difference_y)**2 + (Difference_z)**2)**(0.5)
+        para.print("RMS Difference = "+str(RMS_Difference))
+        para.print("RMS Difference in Debye = "+str(RMS_Difference/0.3934303))
+        return mom_dipole_x

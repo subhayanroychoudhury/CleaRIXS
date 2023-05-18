@@ -29,10 +29,10 @@ def AbsCalc(ixyz,xi,nocc,norb,chb_xmat):
 def abs_spec(Absorption, inp_freq, ener, Gamma, GS_tot_en, File):
     broadnd_spec = 0
     Gamma=sp.imag(Gamma)
-    print("lens = "+str([len(Absorption) , len(ener)]))
+    #print("lens = "+str([len(Absorption) , len(ener)]))
     ener = ener-GS_tot_en
-    print("Printing ener : "+str(ener))
-    print("Printing inp_freq : "+str(inp_freq))
+    #print("Printing ener : "+str(ener))
+    #print("Printing inp_freq : "+str(inp_freq))
     for i in range(len(ener)):
      broadnd_spec += abs(Absorption[i])**2 * sp.exp(-( inp_freq - ener[i] )**2/(2*Gamma**2))
     sp.savetxt(File, sp.array([inp_freq , broadnd_spec]).T,fmt="%9.6f")

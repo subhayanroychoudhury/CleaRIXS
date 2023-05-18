@@ -20,6 +20,7 @@ class inp_data():
           self.input_file ="qche.in"
           self.output_file ="qche.out"
           self.printanalysis=False
+          self.DoRIXS=False
 
 class SpectrumAnalyze():
       def __init__(self,S,len_inw,len_outw):
@@ -71,7 +72,6 @@ class SpectrumPlot():
           win_numb = len(self.inp_freq)
           broadnd_spec = [0] * win_numb #Make this an array of dimensions len(w_in)
           numb = len(e_f)
-          print("Number of possible final states = "+str(numb))
           w_in_index = -1
           with open(SpecFile, "ab") as f:
            for w_in in self.inp_freq:

@@ -1,8 +1,10 @@
+import time
 import numpy as sp
 from rixs_modules import *
 from read_modules import *
 from Classdefs import *
 
+time0 = time.time()
 ###########
 userin = sys.stdin
 userin = open(sys.argv[1], 'r')
@@ -40,6 +42,7 @@ calc_abs=userinp.calc_abs
 printinteg=userinp.printinteg
 printanalysis=userinp.printanalysis
 DoRIXS=userinp.DoRIXS
+print("check_amp = "+str(check_amp))
 print("Will read electronic structure data from "+str(input_file)+" and "+str(output_file))
 GS_tot_en, FCH_tot_en, Align_tot_en = tot_energy_reader(output_file,do_align)
 CI_Expansion=Unres_CISreader(output_file,check_amp)
@@ -50,8 +53,14 @@ for i in CI_Expansion:
 nocc,core_ind_gs=occuFinder(input_file)
 full_mom_matrix, full_gs_matrix, full_ovlp_matrix = read_full_matrices(nocc,core_ind_gs)
 ener = FCHunoccupied_energy_reader(nocc,core_ind_gs,output_file)
-ener = ener+FCH_tot_en
+if do_align:
+ align_shift = Align_tot_en - sp.min(ener)
+ ener = ener + align_shift
+else:
+ ener = ener + FCH_tot_en
 #
+#print("Printing the intermediate state total energies")
+#print(ener)
 xi=(sp.array(full_ovlp_matrix)).T
 norb=min(xi.shape)
 #
@@ -63,13 +72,16 @@ inp_freq = SuggestWin(GS_tot_en, ener, lowE, highE, gridP)
 if calc_abs:
  for ixyz in [0,1,2]:
   AbsSpecFile = "Abs_spec."+str(ixyz)+".dat"
-  print("Absorption[ixyz] = "+str(Absorption[ixyz]))
+  #print("Absorption[ixyz] = "+str(Absorption[ixyz]))
   if (ixyz == 0):
    AbsSpectrum = abs_spec(Absorption[ixyz], inp_freq, ener, Gamma, GS_tot_en, AbsSpecFile) 
   else:
    AbsSpectrum += abs_spec(Absorption[ixyz], inp_freq, ener, Gamma, GS_tot_en, AbsSpecFile)
  AbsSpectrum = AbsSpectrum/3.0
  sp.savetxt("Abs_spec.dat",sp.array([inp_freq , AbsSpectrum]).T) 
+print("Done with absorption calculation")
+time1 = time.time()
+print("Time elapsed = "+str(time1-time0))
 if DoRIXS:
  T_f = [[0,0,0],[0,0,0],[0,0,0]]
  if Dodebug:
@@ -80,7 +92,7 @@ if DoRIXS:
   EmmAmp=[[0 for col in range(norb-nocc)] for row in range(len(CI_Expansion)+1)] #Emmission amplitude. Row for 'F'. Column for 'X_k'.
   gb_xmat_ = sp.array([gb_xmat[:nocc]])
   for k in range(nocc,norb):
-   print("Going in with k = "+str(k))
+   print("Going in with emission-direction = "+str(emm_idir)+" and k = "+str(k))
    Denom = sp.array([[1/((w_inGS+Gamma+GS_tot_en)-ener[k-nocc])] for w_inGS in inp_freq]) #sp.array corresponding to different values of w_in
    D1_det, D2_det = K_DepDets(k,emm_idir,nocc,norb,emm_xi,emm_xi_c_,eta_mat,zeta,Dmy1_DET,absp_ref_det)
    T2 = la.kron(gb_xmat_,D2_det)
@@ -105,6 +117,9 @@ if DoRIXS:
     Absp = Absorption[ixyz][k-nocc] * Denom #sp.array corresponding to different values of w_in
     T_f[emm_idir][ixyz] += la.kron(Absp , EmmAmp_k) #Quantity in Eq. 2. This is a (L X F) matrix. L is number of input frequencies and F is number of final states including GS
  sp.set_printoptions(threshold=sys.maxsize)
+ print("RIXS amplitudes calculated")
+ time2=time.time()
+ print("Time elapsed = "+str(time2-time0))
  if printsticks or printanalysis:
   outp_freq = inp_freq
  if printanalysis:
@@ -153,3 +168,6 @@ if DoRIXS:
   IntegFile = "IntegratedSpectrum.dat"
   integ_array = integ_array/9.0
   sp.savetxt(IntegFile,integ_array)
+time3 = time.time()
+print("All done")
+print("Time elapsed = "+str(time3-time0))
