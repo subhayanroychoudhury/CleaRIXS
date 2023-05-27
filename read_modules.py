@@ -1,4 +1,4 @@
-""" Find all nontrivial determinants """
+""" Read Q-Chem outputs """
 from __future__ import print_function
 
 
