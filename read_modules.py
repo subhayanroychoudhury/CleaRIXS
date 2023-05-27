@@ -139,9 +139,7 @@ def energy_reader(nocc,core):
       if (line_index > 2):
        list1 = line.split()
        eigenvalue_list = eigenvalue_list + list1
-    para.print("eigenvalue_list = "+str(eigenvalue_list))
-    #eigenvalue_list.pop(int(core-1))
-    #string=' '.join([str(item) for item in list1])     
+    #para.print("eigenvalue_list = "+str(eigenvalue_list))
     eigenvalue_list = sp.delete(eigenvalue_list,int(core-1))
     ener = sp.asarray(eigenvalue_list, dtype = sp.float64,order ='C')
     ener = 27.2114 * ener
@@ -172,36 +170,6 @@ def FCHunoccupied_energy_reader(nocc,core,FileName):
     FCH_ener = conv_fac * FCH_ener
     return(FCH_ener)
 
-def for_b_arr(nelec, core_ind_gs):
-	FileName="KS_GSvsFCH_Overlap.dat"
-	ReadFile=open(FileName)
-	gs_indx=0
-	ovlp=[]
-	for line in ReadFile:
-	 dumm=[]
-	 gs_indx=gs_indx+1
-	 if (gs_indx > nelec+1):
-	  break #Don't go to GS conduction subspace
-         if (gs_indx != int(core_ind_gs)): #Skipping the core level to be emptied
-	  for i in range(nelec): #Don't go to FCH conduction subspace
-	   dumm.append(float(line.split()[i])) 
-	  ovlp.append(dumm)
-        para.print("PRINT OVERLAP")
-	for j in range(len(ovlp)):
-         para.print(str(j+1))
-	 para.print(str(ovlp[j]))
-	##################################
-	for j in range(len(ovlp)):
-	 a=sp.array(ovlp[j])
-	 norm=sp.sum((abs(a))**2)#norm of GS orbital within FCH occupied subspace
-	 para.print("For valence GS orb = "+str(j+1)+" norm within FCH occ. subspace is "+str(norm)) 
-	 para.print("Compare this with excited state :             "+str(nelec-j))
-	 para.print("Overlaps with appreciable magnitude ")
-	 for i in range(len(a)):
-	  if (abs(a[i]) > 0.01):
-	   para.print(str(i+1)+"         "+str(a[i])) 
-	 para.print("__________________________________________________")
-        return ovlp 
 def for_ixmat(nelec):
         FileName="dipole_beta_mom.dat"
         ReadFile=open(FileName)
