@@ -92,7 +92,7 @@ def occuFinder(FileName):
     return nocc,core
 
 def tot_energy_reader(FileName,do_align):
-    FileName = 'qchem.out'
+    #FileName = 'qchem.out'
     should_read = False
     line_index = 0
     ReadFile=open(FileName)
