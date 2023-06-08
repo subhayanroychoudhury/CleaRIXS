@@ -285,41 +285,41 @@ def for_energy_eigenvalue(nelec):
         #para.print(str(ener))
         return(ener)
 def DipoleMomentCalculator(core_orb_ind,nelec):
-	gs_matrix = sp.genfromtxt("beta_dipole_x_gs.txt")
-	mom_matrix = sp.genfromtxt("beta_dipole_x_mom.txt")
-	gs_dipole_x = 0
-	mom_dipole_x = 0
-	for i in range(nelec):
-	 mom_dipole_x += mom_matrix[i,i] 
-	for i in range(nelec+1):
-	 gs_dipole_x += gs_matrix[i,i]
-	gs_dipole_x = gs_dipole_x - gs_matrix[core_orb_ind-1 , core_orb_ind-1]
+        gs_matrix = sp.genfromtxt("beta_dipole_x_gs.txt")
+        mom_matrix = sp.genfromtxt("beta_dipole_x_mom.txt")
+        gs_dipole_x = 0
+        mom_dipole_x = 0
+        for i in range(nelec):
+         mom_dipole_x += mom_matrix[i,i] 
+        for i in range(nelec+1):
+         gs_dipole_x += gs_matrix[i,i]
+        gs_dipole_x = gs_dipole_x - gs_matrix[core_orb_ind-1 , core_orb_ind-1]
         para.print("mom_dipole_x = "+str(mom_dipole_x))
         para.print("gs_dipole_x = "+str(gs_dipole_x))
         Difference_x = mom_dipole_x-gs_dipole_x
         para.print("Difference = "+str(Difference_x))
-	gs_matrix = sp.genfromtxt("beta_dipole_y_gs.txt")
-	mom_matrix = sp.genfromtxt("beta_dipole_y_mom.txt")
-	gs_dipole_x = 0
-	mom_dipole_x = 0
-	for i in range(nelec):
-	 mom_dipole_x += mom_matrix[i,i] 
-	for i in range(nelec+1):
-	 gs_dipole_x += gs_matrix[i,i]
-	gs_dipole_x = gs_dipole_x - gs_matrix[core_orb_ind-1 , core_orb_ind-1]
+        gs_matrix = sp.genfromtxt("beta_dipole_y_gs.txt")
+        mom_matrix = sp.genfromtxt("beta_dipole_y_mom.txt")
+        gs_dipole_x = 0
+        mom_dipole_x = 0
+        for i in range(nelec):
+         mom_dipole_x += mom_matrix[i,i] 
+        for i in range(nelec+1):
+         gs_dipole_x += gs_matrix[i,i]
+        gs_dipole_x = gs_dipole_x - gs_matrix[core_orb_ind-1 , core_orb_ind-1]
         para.print("mom_dipole_y = "+str(mom_dipole_x))
         para.print("gs_dipole_y = "+str(gs_dipole_x))
         Difference_y = mom_dipole_x-gs_dipole_x
         para.print("Difference = "+str(Difference_y))
-	gs_matrix = sp.genfromtxt("beta_dipole_z_gs.txt")
-	mom_matrix = sp.genfromtxt("beta_dipole_z_mom.txt")
-	gs_dipole_x = 0
-	mom_dipole_x = 0
-	for i in range(nelec):
-	 mom_dipole_x += mom_matrix[i,i] 
-	for i in range(nelec+1):
-	 gs_dipole_x += gs_matrix[i,i]
-	gs_dipole_x = gs_dipole_x - gs_matrix[core_orb_ind-1 , core_orb_ind-1]
+        gs_matrix = sp.genfromtxt("beta_dipole_z_gs.txt")
+        mom_matrix = sp.genfromtxt("beta_dipole_z_mom.txt")
+        gs_dipole_x = 0
+        mom_dipole_x = 0
+        for i in range(nelec):
+         mom_dipole_x += mom_matrix[i,i] 
+        for i in range(nelec+1):
+         gs_dipole_x += gs_matrix[i,i]
+        gs_dipole_x = gs_dipole_x - gs_matrix[core_orb_ind-1 , core_orb_ind-1]
         para.print("mom_dipole_z = "+str(mom_dipole_x))
         para.print("gs_dipole_z = "+str(gs_dipole_x))
         Difference_z = mom_dipole_x-gs_dipole_x
