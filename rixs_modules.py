@@ -14,17 +14,15 @@ def AbsCalc(ixyz,xi,nocc,norb,chb_xmat):
     ADet = la.det(AMat)
     APrimeMat = xi[nocc:,0:nocc]
     KMat = sp.matrix(APrimeMat) * AInvMat
-    for f in range(nocc,norb): #Loop over FCH state empty orbitals
-     CUMUL_CONTRIB = 0
-     for h in range(nocc): #Loop over FCH state occupied orbitals
-      MB_OVLP = KMat[(f-nocc),h] * ADet
-      CH_CONTRIB = (chb_xmat[h]).conjugate() * MB_OVLP
-      CUMUL_CONTRIB = CUMUL_CONTRIB - CH_CONTRIB
-     FCH_CONTRIB = (chb_xmat[f]).conjugate() * ADet
-     CUMUL_CONTRIB = CUMUL_CONTRIB + FCH_CONTRIB
-     #AbsTrAmp.append([(ener[f-nocc]/27.2114),(CUMUL_CONTRIB)**2])
-     AbsTrAmp.append(CUMUL_CONTRIB)
-    return AbsTrAmp
+    #
+    UnoccFxmat = chb_xmat[nocc:].conjugate()
+    OccFxmat = chb_xmat[:nocc].conjugate()
+    OccFxmat = sp.reshape(OccFxmat,(nocc,1))
+    UnoccFxmat = sp.reshape(UnoccFxmat, (norb-nocc,1))
+    #
+    TrAmpl = (UnoccFxmat - KMat * OccFxmat)*ADet
+    TrAmpl = sp.reshape(TrAmpl, (1,len(TrAmpl)))
+    return TrAmpl #AbsTrAmp
 
 def abs_spec(Absorption, inp_freq, ener, Gamma, GS_tot_en, File):
     broadnd_spec = 0

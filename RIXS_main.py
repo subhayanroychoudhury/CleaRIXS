@@ -68,6 +68,7 @@ Absorption=[]
 for ixyz in [0,1,2]:
  chb_xmat=sp.array(full_mom_matrix)[ixyz,:]
  Absorption.append(AbsCalc(ixyz,xi,nocc,norb,chb_xmat))
+Absorption = sp.reshape(Absorption,(3,norb-nocc))
 inp_freq = SuggestWin(GS_tot_en, ener, lowE, highE, gridP) 
 if calc_abs:
  for ixyz in [0,1,2]:
